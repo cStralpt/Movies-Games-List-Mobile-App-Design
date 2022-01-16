@@ -131,5 +131,6 @@ const styles = StyleSheet.create({
   },
   fitContents: {
     margin: 5,
+    padding,
   },
 });

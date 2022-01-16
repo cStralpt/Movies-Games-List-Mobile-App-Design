@@ -1,4 +1,5 @@
 import * as React from 'react';
+import { useState } from 'react';
 import {
   Text,
   View,
@@ -9,17 +10,30 @@ import {
   StatusBar,
   SafeAreaView,
   TouchableOpacity,
+  ScrollView,
 } from 'react-native';
 import Fa from 'react-native-vector-icons/FontAwesome';
 import Ionic from 'react-native-vector-icons/Ionicons';
 import { NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+function shuFleRecs(min, max) {
+  return Math.floor(Math.random() * (max - min + 1) + min);
+}
+const GorM = shuFleRecs(0, 1);
 export default function Contents({ route }) {
-  const { GamesList, MoviesList, AllContents } = route.params;
+  const {
+    GamesList,
+    MoviesList,
+    AllContents,
+    moviesHeadings,
+    Recommendation,
+    DataDiri,
+  } = route.params;
   if (route.params.DataType == 'MoviesList') {
     dynamicStylesValue(20);
     console.log('Movies');
   }
+  const [getMoviesHeadings, setMoivesHeadings] = useState(moviesHeadings);
   const RenderGamesList = ({ item }) => (
     <View style={styles.gameItem}>
       <View style={styles.imgContainer}>
@@ -42,16 +56,20 @@ export default function Contents({ route }) {
   const RenderMoviesList = ({ item }) => (
     <View style={styles.moviesItem}>
       <View style={styles.fosterContainer}>
-        <Image style={styles.foster} source={item.Foster} />
+        <Image style={styles.foster} source={item.Img} />
       </View>
       <View style={styles.movieItemData}>
         <Text style={styles.mTitle}>{item.Title}</Text>
         <View style={styles.ratRev}>
           <Text style={styles.mReleased}>{item.Released}</Text>
           <View style={styles.ratRevCont}>
-            <Text style={styles.mRev}>Reviews: {item.Reviews}</Text>
+            <Text style={styles.mRev}>
+              {getMoviesHeadings[0]}: {item.Reviews}
+            </Text>
             <Text style={styles.Dot}>.</Text>
-            <Text style={styles.mRat}>Rating: {item.Rating}</Text>
+            <Text style={styles.mRat}>
+              {getMoviesHeadings[1]}: {item.Rating}
+            </Text>
           </View>
         </View>
       </View>
@@ -103,33 +121,59 @@ export default function Contents({ route }) {
       </View>
     );
   } else if (route.params.DataType == 'Recommendation') {
+    const mOrG = [
+      Recommendation.recData.moviesList[
+        Math.floor(Math.random() * (11 - 0 + 1) + 0)
+      ],
+      Recommendation.recData.gamesList[
+        Math.floor(Math.random() * (4 - 0 + 1) + 0)
+      ],
+    ];
+    // console.log(mOrG);
+    // const randomizeMe = Math.floor(Math.random() * (1 - 0 + 1) + 0);
+    const [getGorM, setGorM] = useState(
+      mOrG[Math.floor(Math.random() * (1 - 0 + 1) + 0)],
+    );
+    const shufleRecNow = () => {
+      // let h = 1;
+      // while (h < 8) {
+      setGorM(mOrG[Math.floor(Math.random() * (1 - 0 + 1) + 0)]);
+      //   h++;
+      // }
+    };
     return (
       <View style={styles.recContainer}>
         <View style={styles.recImgCont}>
-          <Image
-            style={styles.recImg}
-            source={require('../../Assets/Images/Movies/wonder_women.png')}
-          />
+          <Image style={styles.recImg} source={getGorM.Img} />
         </View>
         <View style={styles.infoContainer}>
-          <Text style={styles.recTitle}>Wonder Women</Text>
+          <Text style={styles.recTitle}>{getGorM.Title}</Text>
           <View style={styles.recRatRevCont}>
             <View style={styles.recRevC}>
-              <Text style={styles.recRevRatValue}>8.9</Text>
-              <Text style={styles.recRatRev}>Review</Text>
+              <Text style={styles.recRevRatValue}>{getGorM.Reviews}</Text>
+              <Text style={styles.recRatRev}>
+                {Recommendation.recHeadings[0][0]}
+              </Text>
             </View>
             <View style={[styles.recRatC, styles.recRevC]}>
-              <Text style={styles.recRevRatValue}>17+</Text>
-              <Text style={styles.recRatRev}>Rating</Text>
+              <Text style={styles.recRevRatValue}>{getGorM.Rating}</Text>
+              <Text style={styles.recRatRev}>
+                {Recommendation.recHeadings[0][1]}
+              </Text>
             </View>
           </View>
           <View style={styles.recBtnCont}>
             <TouchableOpacity activeOpacity={0.5} style={{ borderRadius: 15 }}>
-              <Text style={styles.recBtn}>WATCH</Text>
+              <Text style={styles.recBtn}>
+                {Recommendation.recHeadings[1][0]}
+              </Text>
             </TouchableOpacity>
           </View>
         </View>
-        <TouchableOpacity activeOpacity={0.5} style={{ borderRadius: 15 }}>
+        <TouchableOpacity
+          activeOpacity={0.5}
+          onPress={shufleRecNow}
+          style={{ borderRadius: 15, elevation: 19 }}>
           <Fa
             style={{
               position: 'absolute',
@@ -152,7 +196,7 @@ export default function Contents({ route }) {
       <View style={styles.portContainer}>
         <View style={styles.headerPort}>
           <Text style={styles.name}>Satria Alipatullah</Text>
-          <Text style={styles.umur}>18 Tahun</Text>
+          <Text style={styles.umur}>18 {DataDiri.age}</Text>
         </View>
         <View style={styles.mainPort}>
           <Image
@@ -163,9 +207,7 @@ export default function Contents({ route }) {
             <View style={styles.fitMe}>
               <View style={styles.alNpm}>
                 <Text style={styles.alNpm}>NPM: 200602090</Text>
-                <Text style={styles.alamat}>
-                  Alamat: Gereneng Timur, Sakra TImur
-                </Text>
+                <Text style={styles.alamat}>{DataDiri.address}</Text>
               </View>
             </View>
             <View style={styles.about}>
@@ -192,15 +234,65 @@ export default function Contents({ route }) {
       </View>
     );
   } else if (route.params.DataType == 'AllContents') {
+    const DATA = [
+      {
+        title: AllContents.sectionHeadings[1],
+        data: [AllContents.screensDatas.gamesList],
+      },
+      {
+        title: AllContents.sectionHeadings[0],
+        // data: ['French Fries', 'Onion Rings', 'Fried Shrimps'],
+        data: [AllContents.screensDatas.moviesList],
+      },
+    ];
+    // console.log(DATA[0].data[0]);
+    const getAllList = props => {
+      if (props.whatList == 'Games List') {
+        return (
+          <View style={styles.sectionitem}>
+            {console.log(props.whatList)}
+            {/* {console.log(data)} */}
+            <View style={styles.ss}>
+              <FlatList
+                style={styles.fListG}
+                data={props.data}
+                showsHorizontalScrollIndicator={false}
+                showsVerticalScrollIndicator={true}
+                renderItem={RenderGamesList}
+              />
+            </View>
+          </View>
+        );
+      } else if (props.whatList == 'Movies List') {
+        return (
+          <View style={styles.sectionitem}>
+            <View style={styles.container}>
+              <FlatList
+                horizontal
+                style={styles.fListM}
+                data={props.data}
+                showsHorizontalScrollIndicator={false}
+                showsVerticalScrollIndicator={true}
+                renderItem={RenderMoviesList}
+              />
+            </View>
+          </View>
+        );
+      }
+    };
+    const Item = props => getAllList(props);
+
     return (
-      <View style={styles.container}>
-        <FlatList
-          style={styles.fListAC}
-          data={AllContents}
-          showsHorizontalScrollIndicator={true}
-          renderItem={RenderAllContents}
+      <SafeAreaView style={styles.container}>
+        <SectionList
+          sections={DATA}
+          keyExtractor={(item, index) => item + index}
+          renderItem={({ item }) => <Item data={item} whatList="Games List" />}
+          renderSectionHeader={({ section: { title } }) => (
+            <Text style={styles.sectionHeader}>{title}</Text>
+          )}
         />
-      </View>
+      </SafeAreaView>
     );
   }
 }
@@ -413,6 +505,14 @@ const styles = StyleSheet.create({
     borderBottomEndRadius: 15,
     padding: 20,
     // borderWidth: 3,
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 9,
+    },
+    shadowOpacity: 0.48,
+    shadowRadius: 11.95,
+    elevation: 18,
   },
   recTitle: {
     color: '#f77',
@@ -468,7 +568,7 @@ const styles = StyleSheet.create({
   portContainer: {
     display: 'flex',
     height: '100%',
-    borderWidth: 3,
+    // borderWidth: 3,
     padding: 20,
   },
   headerPort: {
@@ -479,6 +579,14 @@ const styles = StyleSheet.create({
     padding: 20,
     borderRadius: 7,
     alignItems: 'center',
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 9,
+    },
+    shadowOpacity: 0.5,
+    shadowRadius: 12.35,
+    elevation: 19,
   },
   name: {
     color: '#f77',
@@ -568,5 +676,14 @@ const styles = StyleSheet.create({
   },
   title: {
     fontSize: 24,
+  },
+  sectionitem: {},
+  sectionHeader: {
+    color: 'hotpink',
+    padding: 5,
+    fontSize: 30,
+    fontFamily: 'serif',
+    borderBottomColor: 'hotpink',
+    borderBottomWidth: 3,
   },
 });
