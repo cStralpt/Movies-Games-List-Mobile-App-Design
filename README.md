@@ -6,5 +6,5 @@ UAS Mobile 2022
 <image style="height: 300px" src="permainan.gif">
 <image style="width: 300px" src="film.gif">
 <image style="height: 300px" src="rekomendasi.gif">
-<image style="width: 300px" src="all_kontent.gif">
+<image style="width: 300px" src="semua_kontent.gif">
 </div>
