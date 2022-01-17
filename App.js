@@ -501,7 +501,7 @@ function Home({ navigation }) {
                     changLang.moviesHeadings,
                     changLang.recHeadingsGorM,
                   ],
-                  randNumb: Math.floor(Math.random() * (11 - 0 + 1) + 0),
+                  randNumb: Math.floor(Math.random() * (1 - 0 + 1) + 0),
                 },
                 DataType: 'Recommendation',
               })

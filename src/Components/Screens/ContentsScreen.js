@@ -11,6 +11,7 @@ import {
   SafeAreaView,
   TouchableOpacity,
   ScrollView,
+  TouchableHighlight,
 } from 'react-native';
 import Fa from 'react-native-vector-icons/FontAwesome';
 import Ionic from 'react-native-vector-icons/Ionicons';
@@ -31,7 +32,7 @@ export default function Contents({ route }) {
   } = route.params;
   if (route.params.DataType == 'MoviesList') {
     dynamicStylesValue(20);
-    console.log('Movies');
+    // console.log('Movies');
   }
   const [getMoviesHeadings, setMoivesHeadings] = useState(moviesHeadings);
   const RenderGamesList = ({ item }) => (
@@ -53,6 +54,7 @@ export default function Contents({ route }) {
       </View>
     </View>
   );
+  const [getmovies, setMovies] = useState(MoviesList);
   const RenderMoviesList = ({ item }) => (
     <View style={styles.moviesItem}>
       <View style={styles.fosterContainer}>
@@ -61,7 +63,17 @@ export default function Contents({ route }) {
       <View style={styles.movieItemData}>
         <Text style={styles.mTitle}>{item.Title}</Text>
         <View style={styles.ratRev}>
-          <Text style={styles.mReleased}>{item.Released}</Text>
+          <TouchableHighlight
+            activeOpacity={0.6}
+            underlayColor="whitesmoke"
+            onPress={() => {
+              const newData = getmovies.filter(items => {
+                return items.Released === item.Released;
+              });
+              setMovies(newData);
+            }}>
+            <Text style={styles.mReleased}>{item.Released}</Text>
+          </TouchableHighlight>
           <View style={styles.ratRevCont}>
             <Text style={styles.mRev}>
               {getMoviesHeadings[0]}: {item.Reviews}
@@ -113,7 +125,7 @@ export default function Contents({ route }) {
         <FlatList
           horizontal
           style={styles.fListM}
-          data={MoviesList}
+          data={getmovies}
           showsHorizontalScrollIndicator={false}
           showsVerticalScrollIndicator={true}
           renderItem={RenderMoviesList}
@@ -122,22 +134,24 @@ export default function Contents({ route }) {
     );
   } else if (route.params.DataType == 'Recommendation') {
     const mOrG = [
-      Recommendation.recData.moviesList[
-        Math.floor(Math.random() * (11 - 0 + 1) + 0)
-      ],
       Recommendation.recData.gamesList[
         Math.floor(Math.random() * (4 - 0 + 1) + 0)
       ],
+      Recommendation.recData.moviesList[
+        Math.floor(Math.random() * (11 - 0 + 1) + 0)
+      ],
     ];
     // console.log(mOrG);
-    // const randomizeMe = Math.floor(Math.random() * (1 - 0 + 1) + 0);
-    const [getGorM, setGorM] = useState(
-      mOrG[Math.floor(Math.random() * (1 - 0 + 1) + 0)],
-    );
+    const [randomizeMe, setRandomizeMe] = useState(Recommendation.randNumb);
+    const [headingRec, setHeadingsRec] = useState(Recommendation.randNumb);
+    const [getGorM, setGorM] = useState(mOrG[randomizeMe]);
     const shufleRecNow = () => {
       // let h = 1;
       // while (h < 8) {
-      setGorM(mOrG[Math.floor(Math.random() * (1 - 0 + 1) + 0)]);
+      setRandomizeMe(Math.floor(Math.random() * (1 - 0 + 1) + 0));
+      setGorM(mOrG[randomizeMe]);
+      setHeadingsRec(randomizeMe);
+      console.log(randomizeMe);
       //   h++;
       // }
     };
@@ -165,7 +179,7 @@ export default function Contents({ route }) {
           <View style={styles.recBtnCont}>
             <TouchableOpacity activeOpacity={0.5} style={{ borderRadius: 15 }}>
               <Text style={styles.recBtn}>
-                {Recommendation.recHeadings[1][0]}
+                {Recommendation.recHeadings[1][headingRec]}
               </Text>
             </TouchableOpacity>
           </View>
@@ -300,7 +314,7 @@ export default function Contents({ route }) {
 let styleValue = { flistPad: 20 };
 function dynamicStylesValue(sV) {
   styleValue.flistPad = 20;
-  console.log('benar');
+  // console.log('benar');
 }
 const styles = StyleSheet.create({
   container: {
